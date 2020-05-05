@@ -12,7 +12,7 @@ pipes <- read_csv("data/final_db.csv")
 pipes_sdb <- read_sf("data/pipes_latlong.shp")
 
 # Defining the range of the output, or the "universe" of values that the output set can take on
-# sets_options("universe", seq(from = 1, to = 4, by = 1))
+sets_options("universe", seq(from = 1, to = 4, by = 1))
 
 # Setting up the fuzzy variables:
 variables <- set(
@@ -53,7 +53,7 @@ variables <- set(
                               fuzzy_trapezoid(corners = c(195, 200, 228.8, 299.2)),
                             average = 
                               fuzzy_trapezoid(corners = c(105, 110, 195, 200))),
-  risk = fuzzy_variable(universe = seq(from = 0, to = 4, by = 1),
+  risk = fuzzy_variable(universe = seq(from = 1, to = 4, by = 1),
                         low = 
                           fuzzy_triangular(corners = c(-1.6, 0, 1)),
                         medium = 
@@ -87,7 +87,7 @@ print(system)
 plot(system) ## plots variables
 
 # Testing the system through providing input to get inferences
-fi <- fuzzy_inference(system, vales = list(diameter = 3, land_use = 1, month = 8, pressure = 20, rainfall =  60), implication = "minimum")
+fi <- fuzzy_inference(system, values = list(diameter = 12, land_use = 1, month = 3, pressure = 270, rainfall =  270), implication = "minimum")
 
 # plotting resulting fuzzy set
 plot(fi)
@@ -96,5 +96,4 @@ plot(fi)
 gset_defuzzify(fi, "centroid")
 
 ## reset universe
-# sets_options("universe", NULL)
-# # }
+sets_options("universe", NULL)

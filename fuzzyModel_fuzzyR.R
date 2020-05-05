@@ -103,10 +103,5 @@ plotmf(fis, 'input', 5)
 # Evaluating the fis model using provided inputs to generate a crisp value for risk
 
 # The inputs must be provided as a matrix, number of inputs (columns) by number of outputs (rows):
-input_stack <- matrix(c(2, 1, 3, 260, 20), 1, 5)
+input_stack <- matrix(c(3, 1, 8, 20, 60), 1, 5)
 evalfis(input_stack, fis)
-
-test_fis <- tipper()
-evalfis(matrix(c(1,2),1,2), test_fis)[1]
-
-tipperGUI2()
