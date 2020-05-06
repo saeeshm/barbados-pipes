@@ -6,14 +6,14 @@
 # A family of fundamental packages that assist with the manipulation, tidying and visualization of data in R
 library(tidyverse)
 library(sf)
+library(raster)
 library(tmap)
 library(readr)
 library(leaflet)
 
 # Reading data as sf objects
-pipes <- read_csv("data/final_db.csv")
 bwa_districts <- read_sf("data/Bwa_districts_latlong.shp")
-pipes_sdb <- read_sf("data/pipes_latlong.shp")
+pipes <- read_sf("data/pipes_final.shp")
 bb_parish <- read_sf("data/BB_parishes_latlong.shp")
 
 # Calling the colorFactor function that can return a 'pal' function which generates a color palette based on an input length
@@ -59,5 +59,3 @@ parish_base <- leaflet(bb_parish) %>%
   )
 
 leaflet(pipes_sdb) %>% addPolylines()
-
-
