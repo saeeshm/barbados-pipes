@@ -1,0 +1,50 @@
+div.outer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+
+.shiny-input-container{
+  width: 100%;
+  margin: 10px;
+  margin-bottom: 15px;
+}
+
+.filters{
+  min-width: 340px; 
+  max-height: 580px;
+  align-items: center; 
+  padding: 10px; 
+  margin: 0;
+}
+
+.scenarios{
+  background-color: rgba(0,0,0,0); 
+  border: none; 
+  align-items: center;
+  padding: 10px;
+  width:20%;
+  top: 60px;
+  right: 10px;
+  min-width: 340px;
+}
+
+label {
+  font-family: 'Catamaran';
+  font-weight: bold;
+  font-size: 15px;
+}
+
+/* Customize fonts */
+body, input, button, select { 
+  font-family: 'Catamaran';
+  font-weight: 200;
+  font-size:14px;
+}
+
+h1, h2, h3, h4 { font-weight: 400; margin: 10px;}

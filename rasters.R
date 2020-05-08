@@ -76,3 +76,9 @@ pipes_sdb_final <- pipes_sdb %>%
 
 # Writing this final pipes sdb as a shapefile - this is the data that will be used for the dashboard
 st_write(pipes_sdb_final, "data/pipes_final.shp")
+# Writing it also as a tibble to make data analysis easier later
+write_csv(pipes_sdb_final %>% as_tibble() %>% select(-geometry), "data/pipes_final.csv")
+
+# Now that the files have been saved to the directory, removing unnecessary objects and garbage collecting
+rm(rain_15yravg, rain_30yravg, rcp26_2035, rcp26_2050, rcp45_2035, rcp45_2050, rcp85_2035, rcp85_2050, pipe_vertices, pipes_final)
+gc()

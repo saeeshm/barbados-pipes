@@ -89,19 +89,14 @@ ruleList <- rbind(c(1,0,0,0,0,4,1,1),
 fis <- addrule(fis, ruleList)
 
 # Seeing the rules in linguistic terms for verification
-showrule(fis)
+# showrule(fis)
 
 # Getting a tabular summary of the fis model
-showfis(fis)
+# showfis(fis)
 
-# Some visualization tools to understand the fis and its components
-# A 3d graphical model of the fis and its functional parameters
+# A 3d visualization of the model and its functional parameters
 gensurf(fis)
-# A 2d graph of all membership functions in a variable
-plotmf(fis, 'input', 5)
 
-# Evaluating the fis model using provided inputs to generate a crisp value for risk
-
-# The inputs must be provided as a matrix, number of inputs (columns) by number of outputs (rows):
-input_stack <- matrix(c(3, 1, 8, 20, 60), 1, 5)
-evalfis(input_stack, fis)
+# Removing unnecessary objects and garbage collecting
+rm(ruleList, addmf_custom)
+gc()
