@@ -6,16 +6,25 @@ div.outer {
   bottom: 0;
   overflow: hidden;
   padding: 0;
+  z-index: -1;
 }
 
+#test{
+  width:100px;
+  z-index:-100000;
+}
 
-.shiny-input-container{
+.leaflet-control-container{
+  z-index: 100;
+}
+
+.shiny-input-container {
   width: 100%;
   margin: 10px;
   margin-bottom: 15px;
 }
 
-.filters{
+.filters {
   min-width: 340px; 
   max-height: 580px;
   align-items: center; 
@@ -23,7 +32,7 @@ div.outer {
   margin: 0;
 }
 
-.scenarios{
+.rainfall {
   background-color: rgba(0,0,0,0); 
   border: none; 
   align-items: center;
