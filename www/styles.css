@@ -1,4 +1,15 @@
-div.outer {
+.header{
+  position: static;
+  margin: auto;
+  margin-top: 10px;
+  max-width: 40%;
+  max-height: 115px;
+  height: auto;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.outer {
   position: fixed;
   top: 0;
   left: 0;
@@ -9,38 +20,58 @@ div.outer {
   z-index: -1;
 }
 
+#map{
+  z-index:0;
+}
+
+#title{
+  z-index:1;
+}
+
 #test{
   width:100px;
   z-index:-100000;
+}
+
+#properties{
+  margin-left:5px;
 }
 
 .leaflet-control-container{
   z-index: 100;
 }
 
+.leaflet-control-layers{
+  top: 65vh;
+  background-clip: unset;
+}
+
 .shiny-input-container {
-  width: 100%;
-  margin: 10px;
-  margin-bottom: 15px;
+  max-width: 95%;
+  margin: 5px;
+  margin-bottom: 9px;
 }
 
 .filters {
-  min-width: 340px; 
-  max-height: 580px;
   align-items: center; 
   padding: 10px; 
   margin: 0;
+  width:27%;
+  min-width:225px;
+  max-width:300px;
+  min-height:450px;
+  max-height: 90%;
 }
 
 .rainfall {
-  background-color: rgba(0,0,0,0); 
   border: none; 
   align-items: center;
   padding: 10px;
-  width:20%;
+  width:27%;
   top: 60px;
   right: 10px;
-  min-width: 340px;
+  max-width: 300px;
+  max-height: 400px;
 }
 
 label {
@@ -56,4 +87,4 @@ body, input, button, select {
   font-size:14px;
 }
 
-h1, h2, h3, h4 { font-weight: 400; margin: 10px;}
+h1, h2, h3, h4 { font-weight: 400; margin: 5px;}

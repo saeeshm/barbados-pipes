@@ -20,19 +20,19 @@ bb_parish <- read_sf("www/bb_parishes_latlong.shp") %>% mutate(UID = paste0("par
 pipes <- read_sf("www/pipes_final.shp") %>% 
   # Selecting only relevant variables
   dplyr::select(c(OBJECTID = "OBJECTI", Subdistrict = "Sbdstrc", Diameter = "Diametr", Length = "Lngth_M", 
-                  Pressure = "Prssr_A", CNX_Density = "CNXDnst", Soil_Type = "Sol_Typ", "Era", "Landuse", 
+                  Pressure = "Prssr_A", CNX_Density = "CNXDnst", Soil_Type = "Sol_Typ", "Era", "Landuse", Landuse_Bin = "Lands_D",
                   rain_15yravg = "rn_15yr", rain_30yravg = "rn_30yr", rcp26_2035 = "r26_203", rcp26_2050 = "r26_205",
                   rcp45_2050 = "r45_203", rcp45_2035 = "r45_205", rcp85_2035 = "r85_203", rcp85_2050 = "r85_205")) %>% 
   dplyr::mutate(UID = paste0("pipe", OBJECTID))
 
 # Non-spatial
-pipes_csv <- read_csv("www/pipes_final.csv") %>% 
-  # selecting only the relevant variables (those related to the rainfall scenario)
-  dplyr::select(OBJECTID, Diameter, Landuse = "Landuse_Du", Pressure = "Pressure_A", rain_15yravg, rain_30yravg, 
-                rcp26_2035, rcp26_2050, rcp45_2035, rcp45_2050, rcp85_2035, rcp85_2050) %>% 
-  # Adding a month variable and setting it to a default value of one for now. This will be manipulated later.
-  dplyr::mutate(month = 1) %>% 
-  dplyr::mutate(UID = paste0("pipe", OBJECTID))
+# pipes_csv <- read_csv("www/pipes_final.csv") %>%
+#   # selecting only the relevant variables (those related to the rainfall scenario)
+#   dplyr::select(OBJECTID, Diameter, Landuse = "Landuse_Du", Pressure = "Pressure_A", rain_15yravg, rain_30yravg,
+#                 rcp26_2035, rcp26_2050, rcp45_2035, rcp45_2050, rcp85_2035, rcp85_2050) %>%
+#   # Adding a month variable and setting it to a default value of one for now. This will be manipulated later.
+#   dplyr::mutate(month = 1) %>%
+#   dplyr::mutate(UID = paste0("pipe", OBJECTID))
 
 # ==== DEFINING GLOBAL VARIABLES ====
 
@@ -41,6 +41,8 @@ textOut <- character(0)
 # A variable that stores whether or not the mouseout value is valid. Used when querying the base boundary layers for data, in the "properties" box in
 # the UI
 mouseout_valid <- 1
+mousover <- NULL
+mouseout <- NULL
 
 # Colour Palettes: --------
 
