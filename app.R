@@ -8,84 +8,26 @@ library(tidyverse)
 library(sf)
 library(readr)
 library(leaflet)
+# Loading the script that implements the fuzzy model
 source("fuzzy.R")
-
-# Getting all the relevant basemaps and objects from the map script
-# Boundary files --------
-bwa_districts <- read_sf("www/bwa_districts_latlong.shp") %>% mutate(UID = paste0("bwa",OBJECTID))
-bb_parish <- read_sf("www/bb_parishes_latlong.shp") %>% mutate(UID = paste0("bwa",OBJECTID))
-
-# Pipe data --------
-# Spatial
-pipes <- read_sf("www/pipes_final.shp") %>% 
-    # Selecting only relevant variables
-    dplyr::select(c(OBJECTID = "OBJECTI", Subdistrict = "Sbdstrc", Diameter = "Diametr", Length = "Lngth_M", 
-                    Pressure = "Prssr_A", CNX_Density = "CNXDnst", Soil_Type = "Sol_Typ", "Era", "Landuse", 
-                    rain_15yravg = "rn_15yr", rain_30yravg = "rn_30yr", rcp26_2035 = "r26_203", rcp26_2050 = "r26_205",
-                    rcp45_2050 = "r45_203", rcp45_2035 = "r45_205", rcp85_2035 = "r85_203", rcp85_2050 = "r85_205"))
-# Non-spatial
-pipes_csv <- read_csv("www/pipes_final.csv") %>% 
-    # selecting only the relevant variables (those related to the rainfall scenario)
-    dplyr::select(OBJECTID, Diameter, Landuse = "Landuse_Du", Pressure = "Pressure_A", rain_15yravg, rain_30yravg, 
-                  rcp26_2035, rcp26_2050, rcp45_2035, rcp45_2050, rcp85_2035, rcp85_2050) %>% 
-    # Adding a month variable and setting it to a default value of one for now. This will be manipulated later.
-    dplyr::mutate(month = 1)
-
-# ==== Creating color palettes for maps ====
-
-# A discrete color palette for the basemaps
-pal_disc <- colorFactor(palette = "viridis", domain = bwa_districts$OBJECTID)
-
-# Another bin-based colour palette to categorize pipe risk
-pal_bin <- colorBin(palette = c("#F1F1F1", "#FFFFB8", "#ED9000", "#E80000"), domain = c(0,4), bins = 4, pretty = F, reverse = F)
-
-# Defining a vector of rainfall values with names that can allow the user to select a rainfall scenario
-vars <- c(
-    "15-year average monthly rainfall" = "rain_15yravg",
-    "30-year average monthly rainfall" = "rain_30yravg",
-    "Projected average monthly rainfall in 2035, RCP 2.6" = "rcp26_2035",
-    "Projected average monthly rainfall in 2035, RCP 4.5" = "rcp45_2035",
-    "Projected average monthly rainfall in 2035, RCP 8.5" = "rcp85_2035",
-    "Projected average monthly rainfall in 2050, RCP 2.6" = "rcp26_2050",
-    "Projected average monthly rainfall in 2050, RCP 4.5" = "rcp45_2050",
-    "Projected average monthly rainfall in 2050, RCP 8.5" = "rcp85_2050"
-)
-
-# A function to transform numeric risk scores into categorical risk scores
-get_risk_category <- function(num){
-    case_when(
-        num < 1 ~ "Low",
-        (num >= 1) & (num < 2) ~ "Medium",
-        (num >= 2) & (num < 3) ~ "High",
-        num >= 3 ~ "Peak"
-    )
-}
+# Loading the scripts that completes all of the setup for this app, including reading data, defining global variables and implementing helper
+# functions
+source("setup.R")
 
 # Define UI for application - using a navbar page
-ui <- navbarPage(
+ui <- fluidPage(
     title = "Vizualizing risk in the barbados pipe network",
     id = "nav",
     # The first tab which draws the map using Parishes
-    tabPanel("Parishes", 
-             div(class = "outer",
-                 # Calling the styles.css stylesheet
-                 tags$head(includeCSS("styles.css")),
-                 # Adding the font catamaran from google fonts
-                 tags$link(rel = "stylesheet", href="http://fonts.googleapis.com/css?family=Catamaran"),
-                 
-                 # Setting the output of the map to cover the whole screen using the leaflet output command
-                 leafletOutput("parish_map", height = "100%"))
-             ),
-    # The second tab, which draws the map using BWA districts as boundaries
-    tabPanel("BWA Districts", 
-             div(class = "outer",
-                 # Including the same stylesheets, map options and panel options
-                 tags$head(includeCSS("styles.css")),
-                 tags$link(rel = "stylesheet", href="http://fonts.googleapis.com/css?family=Catamaran"),
-                 
-                 leafletOutput("bwa_map", height = "100%"))
-             ),
-    
+    div(class = "outer",
+        # Calling the styles.css stylesheet
+        tags$head(includeCSS("styles.css")),
+        # Adding the font catamaran from google fonts
+        tags$link(rel = "stylesheet", href="http://fonts.googleapis.com/css?family=Catamaran"),
+        
+        # Setting the output of the map to cover the whole screen using the leaflet output command
+        leafletOutput("map", height = "100%")
+    ),
     # Creating a floating panel that contains the filtering options we want
     absolutePanel(id = "filters", class = "panel panel-default filters", draggable = F, top = 60, left = 10, 
                   right = "auto", bottom = "auto", width = "20%", height = "auto", fixed = T,
@@ -131,9 +73,10 @@ ui <- navbarPage(
                   sliderInput(inputId = "month", label = "Month of the year", min = 1, max = 12, value = 6)
                   ),
     absolutePanel(id = "boundaries", class = "panel panel-default boundaries", fixed = TRUE,
-                  draggable = F, top = 160, left = "auto", right = 10, bottom = "auto", width = "20%", height = "auto",
+                  draggable = F, top = 360, left = "auto", right = 10, bottom = "auto", width = "20%", height = "auto",
                   
-                  textOutput("properties")
+                  htmlOutput("properties"),
+                  textOutput("test")
                   )
     )
 
@@ -141,7 +84,7 @@ ui <- navbarPage(
 server <- function(input, output) {
     
     # Drawing the base-map using the parishes as base
-    output$parish_map <- renderLeaflet({
+    output$map <- renderLeaflet({
         leaflet(bb_parish %>% arrange(OBJECTID), options = leafletOptions(zoomControl = FALSE)) %>% 
             # htmlwidgets::onRender("function(el, x) {
             #     L.control.zoom({ position: 'bottomright' }).addTo(this)
@@ -150,47 +93,39 @@ server <- function(input, output) {
             addProviderTiles(providers$Esri.WorldShadedRelief) %>% 
             addProviderTiles(providers$Stamen.TonerLines,
                              options = providerTileOptions(opacity = 0.4)) %>% 
+            # Adding panes that allow for z-indexing different layers
+            addMapPane("back_layers", zIndex = 400) %>% 
+            addMapPane("pipe_layer", zIndex = 450) %>% 
             # Adding the boundary polygons and applying the appropriate colour palette so that each one is coloured uniquely.
             addPolygons(layerId = bb_parish %>% arrange(OBJECTID) %>% pull(UID),
                         group = "parish",
                         color = "#1A1A1A", 
-                        fillColor = ~pal_disc(bb_parish$OBJECTID),
-                        weight = 0.8, 
-                        smoothFactor = 0.5,
-                        opacity = 0.8, 
-                        fillOpacity = 0.5) %>%
+                        fillColor = "FFFFFF",
+                        weight = 1, 
+                        smoothFactor = 1,
+                        opacity = 1, 
+                        fillOpacity = 0.2,
+                        options = pathOptions(pane = "back_layers")) %>%
+            addPolygons(data = bwa_districts %>% arrange(OBJECTID),
+                        group = "bwa",
+                        layerId = bwa_districts %>% arrange(UID) %>% pull(UID),
+                        color = "#1A1A1A", 
+                        fillColor = "FFFFFF",
+                        weight = 1, 
+                        smoothFactor = 1,
+                        opacity = 1, 
+                        fillOpacity = 0.2,
+                        options = pathOptions(pane = "back_layers")) %>%
+            addLayersControl(
+                baseGroups = c("parish", "bwa"),
+                options = layersControlOptions(collapsed = FALSE, sortLayers = FALSE, autoZIndex = FALSE)
+            ) %>% 
             # Adding the legend for the risk scores
             addLegend(position = "bottomright", 
                       pal = pal_bin, 
                       values = 1:4,
                       title = "Burst risk",
                       opacity = 0.9,
-                      labFormat = function(type, cuts, p) {  # Here's the trick
-                          paste0(c("Peak", "High", "Medium", "Low"))
-                      })
-    })
-    
-    # The map using the bwa districts as base
-    output$bwa_map <- renderLeaflet({
-        leaflet(bwa_districts %>% arrange(OBJECTID), options = leafletOptions(zoomControl = FALSE)) %>% 
-            # Adding the background tileset
-            addProviderTiles(providers$Esri.WorldShadedRelief) %>% 
-            addProviderTiles(providers$Stamen.TonerLines,
-                             options = providerTileOptions(opacity = 0.4)) %>% 
-            # Adding the boundary polygons and applying the appropriate colour palette so that each one is coloured uniquely.
-            addPolygons(layerId = bwa_districts %>% arrange(OBJECTID) %>% pull(UID),
-                        color = "#1A1A1A", 
-                        fillColor = ~pal_disc(bwa_districts$OBJECTID),
-                        weight = 0.8, 
-                        smoothFactor = 0.5,
-                        opacity = 0.8, 
-                        fillOpacity = 0.5) %>%
-            # Adding the legend for the risk scores
-            addLegend(position = "bottomright", 
-                      pal = pal_bin, 
-                      values = 0:4,
-                      title = "Burst Risk",
-                      opacity = 1.0,
                       labFormat = function(type, cuts, p) {  # Here's the trick
                           paste0(c("Peak", "High", "Medium", "Low"))
                       })
@@ -237,13 +172,16 @@ server <- function(input, output) {
             filter(OBJECTID %in% temp$OBJECTID) %>% 
             pull(risk)
         # When triggered by a change in the risk calculation or a change in the filter, it removes the old pipes layer and redraws a new one on top
-        leafletProxy("parish_map", data = temp) %>%
-            clearGroup("pipe_parish") %>%
-            addPolylines(group = "pipe_parish",
+        leafletProxy("map", data = temp %>% arrange(OBJECTID)) %>%
+            clearGroup("pipe") %>%
+            addPolylines(group = "pipe",
+                         layerId = temp %>% arrange(OBJECTID) %>% pull(UID),
                          color = ~pal_bin(risk),
                          weight = 4,
                          smoothFactor = 2,
                          opacity = 1.0,
+                         # Setting the path to ensure it z-index is higher than the back_layers
+                         options = pathOptions(pane = "pipe_layer"),
                          # Adding a highlight on hover
                          highlightOptions = highlightOptions(color = "White", 
                                                              weight = 6,
@@ -276,55 +214,43 @@ server <- function(input, output) {
             )
     })
     
-    # A similar observe event for the bwa districts map
-    observe({
-        # Storing the filtered pipes from the filtering reactive object in a temporary variable 
-        temp <- map_filter()
-        
-        # Assigning a column for risk, by taking the values from the risk reactive objective. First filtering out only those risk scores that are in
-        # the new filtered set and attaching them to the dataset
-        temp$risk <- risk() %>% 
-            filter(OBJECTID %in% temp$OBJECTID) %>% 
-            pull(risk)
-        # When triggered by a change in the risk calculation or a change in the filter, it removes the old pipes layer and redraws a new one on top
-        leafletProxy("bwa_map", data = temp) %>%
-            clearGroup("pipe_bwa") %>%
-            addPolylines(group = "pipe_bwa",
-                         color = ~pal_bin(risk),
-                         weight = 4,
-                         smoothFactor = 2,
-                         opacity = 1.0,
-                         # Adding a highlight on hover
-                         highlightOptions = highlightOptions(color = "white",
-                                                             weight = 6,
-                                                             bringToFront = TRUE),
-                         # Adding a popup
-                         popup = paste0("<b>Location: </b>",
-                                        temp$Subdistrict,
-                                        "<br>",
-                                        "<b>Diameter: </b>",
-                                        temp$Diameter, " mm",
-                                        "<br>",
-                                        "<b>Pressure: </b>",
-                                        temp$Pressure, " Pa",
-                                        "<br>",
-                                        "<b>Soil type: </b>",
-                                        temp$Soil_Type,
-                                        "<br>",
-                                        "<b>Era built: </b>",
-                                        temp$Era,
-                                        "<br>",
-                                        "<b>Average monthly rainfall (based on chosen scenario): </b>",
-                                        round(temp[[isolate(input$rain)]], 2),
-                                        "<br>",
-                                        "<b>Risk category: </b>",
-                                        get_risk_category(temp$risk),
-                                        "<br>",
-                                        "<b>Risk score: </b>",
-                                        round(temp$risk, 2)
-                         )
-            )
-    })
+    # Rendering the properties of the baselayer in the output text box - due the limitations of the leaflet implementation in R this is some COMPLEX
+    # functionality
+    output$properties <- renderText(
+        {
+            mouseover <- input$map_shape_mouseover
+            if(mouseout_valid == 1){
+                mouseout <- input$map_shape_mouseout
+            }
+            
+            if(is.null(mouseover)){
+                textOut <<- "Hover over a region to see its information"
+                textOut
+            }else if(ifelse(length(mouseover$id == mouseout$id) == 0, FALSE, mouseover$id == mouseout$id) &
+                     str_detect(mouseover$id, "pipe")){
+                mouseout <- NULL
+                mouseout_valid <<- 0
+                textOut
+            }else if(ifelse(length(mouseover$id == mouseout$id) == 0, FALSE, mouseover$id == mouseout$id)){
+                mouseout <- NULL
+                mouseout_valid <<- 0
+                textOut <- "Hover over a region to see its information"
+                textOut
+            }else if(str_detect(mouseover$group, "bwa|parish")){
+                if(is.null(mouseout)){
+                    textOut <<- getFeatureInfo(mouseover$id)
+                    mouseout <- input$map_shape_mouseout
+                    mouseout_valid <<- 1
+                    textOut
+                }else if(mouseover$id != mouseout$id){
+                    textOut <<- getFeatureInfo(mouseover$id)
+                    textOut
+                }
+            }else{
+                textOut
+            }
+        }
+    )
 }
 
 
