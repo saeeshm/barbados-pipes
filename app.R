@@ -16,69 +16,79 @@ source("setup.R")
 
 # Define UI for application - using a navbar page
 ui <- fluidPage(
-    title = "Vizualizing risk in the barbados pipe network",
-    id = "nav",
+    # Defining the colour scheme for sliders
+    chooseSliderSkin("Shiny", color = "#262626"),
+    # Setting a title
+    title = "Barbados Pipe Risk Platform",
+    # Calling the styles.css stylesheet
+    theme = "styles.css",
+    # Adding the font catamaran from google fonts
+    tags$link(rel = "stylesheet", href="http://fonts.googleapis.com/css?family=Catamaran"),
+    
+    div(class = "header", style = "padding: 10px; background-color: rgba(255,255,255,0.6)",
+        h3("The Barbados Pipe Risk Platform"),
+        h4("Vizualizing risk in the Barbados water distribution system")
+    ),
+    
     # The first tab which draws the map using Parishes
     div(class = "outer",
-        # Calling the styles.css stylesheet
-        tags$head(includeCSS("styles.css")),
-        # Adding the font catamaran from google fonts
-        tags$link(rel = "stylesheet", href="http://fonts.googleapis.com/css?family=Catamaran"),
-        
         # Setting the output of the map to cover the whole screen using the leaflet output command
         leafletOutput("map", height = "100%")
     ),
+        
     # Creating a floating panel that contains the filtering options we want
-    absolutePanel(id = "filters", class = "panel panel-default filters", draggable = F, top = 60, left = 10, 
-                  right = "auto", bottom = "auto", width = "20%", height = "auto", fixed = T,
-                  # The title
-                  h2("Filtering Parameters"),
-                  
-                  # Selection filter for soil type
-                  selectInput("soil", "Soil type", unique(pipes$Soil_Type), multiple = T),
-                  
-                  # Subdistrict
-                  # selectInput("subdistrict", "Sub-District", unique(pipes$Subdistrict), multiple = F),
-                  
-                  # Era
-                  selectInput("era", "Era built", unique(pipes$Era), multiple = T),
-                  
-                  # Landuse
-                  checkboxGroupInput("landuse", "Landuse", unique(pipes$Landuse), inline = T, width = "auto"),
-                  
-                  # Length (as a range slider)
-                  sliderInput("length", "Pipe length (meters)", 
-                              min = floor(range(pipes$Length)[1]), 
-                              max = ceiling(range(pipes$Length)[2]),
-                              # Setting the default range to be bewteen 1/4 and 3/4 of the total range
-                              value = (c((ceiling(range(pipes$Length)[2]) - floor(range(pipes$Length)[1]))/4, 
-                                         ((ceiling(range(pipes$Length)[2]) - floor(range(pipes$Length)[1]))/4) * 3)),
-                              dragRange = T),
-                  
-                  # Diameter (as a range slider)
-                  sliderInput("diameter", "Diameter (inches)",
-                              min = floor(range(pipes$Diameter)[1]), 
-                              max = ceiling(range(pipes$Diameter)[2]),
-                              # Setting the default value range to be bewteen 1/4 and 3/4 of the total range
-                              value = (c((ceiling(range(pipes$Diameter)[2]) - floor(range(pipes$Diameter)[1]))/4, 
-                                         ((ceiling(range(pipes$Diameter)[2]) - floor(range(pipes$Diameter)[1]))/4) * 3)),
-                              dragRange = T)
-                  ),
+    absolutePanel(id = "filters", class = "panel panel-default filters", draggable = F, top = 10, left = 10, 
+                  right = "auto", bottom = "auto", width = "27%", fixed = T,
+        # The title
+        h3("Filtering Parameters"),
+        
+        # Selection filter for soil type
+        selectInput("soil", "Soil type", unique(pipes$Soil_Type), multiple = T),
+        
+        # Subdistrict
+        # selectInput("subdistrict", "Sub-District", unique(pipes$Subdistrict), multiple = F),
+        
+        # Era
+        selectInput("era", "Era built", unique(pipes$Era), multiple = T),
+        
+        # Landuse
+        checkboxGroupInput("landuse", "Landuse", unique(pipes$Landuse), inline = T, width = "auto"),
+        
+        # Length (as a range slider)
+        sliderInput("length", "Pipe length (meters)", 
+                  min = floor(range(pipes$Length)[1]), 
+                  max = ceiling(range(pipes$Length)[2]),
+                  # Setting the default range to be bewteen 1/4 and 3/4 of the total range
+                  value = (c((ceiling(range(pipes$Length)[2]) - floor(range(pipes$Length)[1]))/4, 
+                             ((ceiling(range(pipes$Length)[2]) - floor(range(pipes$Length)[1]))/4) * 3)),
+                  dragRange = T,
+                  round = 1,
+                  ticks = F),
+        
+        # Diameter (as a range slider)
+        sliderInput("diameter", "Diameter (inches)",
+                  min = floor(range(pipes$Diameter)[1]), 
+                  max = ceiling(range(pipes$Diameter)[2]),
+                  # Setting the default value range to be bewteen 1/4 and 3/4 of the total range
+                  value = (c((ceiling(range(pipes$Diameter)[2]) - floor(range(pipes$Diameter)[1]))/4, 
+                             ((ceiling(range(pipes$Diameter)[2]) - floor(range(pipes$Diameter)[1]))/4) * 3)),
+                  dragRange = T,
+                  round = 1,
+                  ticks = F)
+        ),
     # Creating a floating panel that contains the climate scenario options we want
     absolutePanel(id = "rainfall", class = "panel panel-default rainfall", fixed = TRUE,
-                  draggable = FALSE, top = 60, left = "auto", right = 10, bottom = "auto",
-                  width = "20%", height = "auto",
+                  draggable = FALSE, top = 10, left = "auto", right = 10, bottom = "auto",
+                  width = "27%", height = "auto",
                   
+                  h3("Risk Calculation Parameters"),
                   selectInput("rain", "Rainfall scenario", vars, selected = "rain_15yravg"),
-                  sliderInput(inputId = "month", label = "Month of the year", min = 1, max = 12, value = 6)
-                  ),
-    absolutePanel(id = "boundaries", class = "panel panel-default boundaries", fixed = TRUE,
-                  draggable = F, top = 360, left = "auto", right = 10, bottom = "auto", width = "20%", height = "auto",
+                  sliderInput(inputId = "month", label = "Month of the year", min = 1, max = 12, value = 6, ticks = F),
                   
+                  h3("Area Description:"),
                   htmlOutput("properties"),
-                  textOutput("test")
-                  )
-    )
+    ),
+)
 
 # Define server logic required to draw the map and implement filter conditions
 server <- function(input, output) {
@@ -98,31 +108,31 @@ server <- function(input, output) {
             addMapPane("pipe_layer", zIndex = 450) %>% 
             # Adding the boundary polygons and applying the appropriate colour palette so that each one is coloured uniquely.
             addPolygons(layerId = bb_parish %>% arrange(OBJECTID) %>% pull(UID),
-                        group = "parish",
+                        group = "Parishes",
                         color = "#1A1A1A", 
-                        fillColor = "FFFFFF",
+                        fillColor = "white",
                         weight = 1, 
                         smoothFactor = 1,
                         opacity = 1, 
-                        fillOpacity = 0.2,
+                        fillOpacity = 0.4,
                         options = pathOptions(pane = "back_layers")) %>%
             addPolygons(data = bwa_districts %>% arrange(OBJECTID),
-                        group = "bwa",
+                        group = "BWA Districts",
                         layerId = bwa_districts %>% arrange(UID) %>% pull(UID),
                         color = "#1A1A1A", 
-                        fillColor = "FFFFFF",
+                        fillColor = "white",
                         weight = 1, 
                         smoothFactor = 1,
                         opacity = 1, 
-                        fillOpacity = 0.2,
+                        fillOpacity = 0.4,
                         options = pathOptions(pane = "back_layers")) %>%
             addLayersControl(
-                baseGroups = c("parish", "bwa"),
+                baseGroups = c("Parishes", "BWA Districts"),
                 options = layersControlOptions(collapsed = FALSE, sortLayers = FALSE, autoZIndex = FALSE)
             ) %>% 
             # Adding the legend for the risk scores
             addLegend(position = "bottomright", 
-                      pal = pal_bin, 
+                      pal = pal_bin_invert, 
                       values = 1:4,
                       title = "Burst risk",
                       opacity = 0.9,
@@ -156,9 +166,9 @@ server <- function(input, output) {
     # Using the inputs from the climate scenario panel to calculate the correct risk scores and storing these in a reactive object.Note that we
     # calculated for the entire dataset every time the user asks for a new scenario
     risk <- reactive({
-        pipes_csv %>% 
+        pipes %>% 
             rowwise() %>%
-            mutate(risk = evalfis(matrix(c(Diameter, Landuse, input$month, Pressure, get(input$rain)), 1, 5), fis)[1]) %>% 
+            mutate(risk = evalfis(matrix(c(Diameter, Landuse_Bin, input$month, Pressure, get(input$rain)), 1, 5), fis)[1]) %>% 
             select(OBJECTID, risk)
     })
     
@@ -187,7 +197,8 @@ server <- function(input, output) {
                                                              weight = 6,
                                                              bringToFront = TRUE),
                          # Adding a popup
-                         popup = paste0("<b>Location: </b>",
+                         popup = paste0("<h4 style = 'margin:0; margin-bottom:7px; font-size:200%;'>Pipe Description</h4>",
+                                        "<b>Location: </b>",
                                         temp$Subdistrict,
                                         "<br>",
                                         "<b>Diameter: </b>",
@@ -202,8 +213,8 @@ server <- function(input, output) {
                                         "<b>Era built: </b>",
                                         temp$Era,
                                         "<br>",
-                                        "<b>Average monthly rainfall (based on chosen scenario): </b>",
-                                        round(temp[[isolate(input$rain)]], 2),
+                                        "<b>Mean monthly rainfall: </b>",
+                                        round(temp[[isolate(input$rain)]], 2), " mm",
                                         "<br>",
                                         "<b>Risk category: </b>",
                                         get_risk_category(temp$risk),
@@ -236,7 +247,7 @@ server <- function(input, output) {
                 mouseout_valid <<- 0
                 textOut <- "Hover over a region to see its information"
                 textOut
-            }else if(str_detect(mouseover$group, "bwa|parish")){
+            }else if(str_detect(mouseover$id, "bwa|parish")){
                 if(is.null(mouseout)){
                     textOut <<- getFeatureInfo(mouseover$id)
                     mouseout <- input$map_shape_mouseout
@@ -252,7 +263,6 @@ server <- function(input, output) {
         }
     )
 }
-
 
 # Run the application 
 shinyApp(ui = ui, server = server)

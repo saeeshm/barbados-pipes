@@ -1,0 +1,116 @@
+.header{
+  position: static;
+  margin: auto;
+  margin-top: 10px;
+  max-width: 40%;
+  max-height: 115px;
+  height: auto;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.outer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  padding: 0;
+  z-index: -1;
+}
+
+#map{
+  z-index:0;
+}
+
+#title{
+  z-index:1;
+}
+
+#test{
+  width:100px;
+  z-index:-100000;
+}
+
+#properties{
+  margin-left:5px;
+}
+
+.leaflet-control-container{
+  z-index: 100;
+}
+
+.leaflet-control-layers{
+  top: 65vh;
+  background-clip: unset;
+}
+
+.shiny-input-container {
+  max-width: 95%;
+  margin: 5px;
+  margin-bottom: 9px;
+  padding-right:5px;
+}
+
+.filters {
+  align-items: center; 
+  padding: 10px; 
+  margin: 0;
+  width:27%;
+  min-width:225px;
+  max-width:310px;
+  max-height: 90%;
+}
+
+.rainfall {
+  border: none; 
+  align-items: center;
+  padding: 10px;
+  width:27%;
+  top: 60px;
+  right: 10px;
+  max-width: 310px;
+  max-height: 400px;
+}
+
+label {
+  font-family: 'Catamaran';
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.irs-bar{
+  border-top:#262626;
+  border-bottom:262626;
+}
+
+.irs-grid-pol, .irs-bar, .irs-from, .irs-to, .irs-grid-pol.small{
+  background: #262626;
+}
+
+.irs-grid-text{
+  font-size:10px;
+  color:#262626;
+  bottom:5px;
+}
+
+.legend{
+  font-family: Catamaran;
+  letter-spacing: 0.5px;
+  line-height: 18px;
+  font-size: 15px;
+}
+
+.leaflet-popup-content{
+  font-family:Catamaran;
+}
+
+/* Customize fonts */
+body, input, button, select { 
+  font-family: 'Catamaran';
+  font-weight: 200;
+  font-size:14px;
+}
+
+h1, h2, h3, h4 { font-weight: 400; margin: 5px;}
