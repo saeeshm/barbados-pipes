@@ -108,7 +108,7 @@ server <- function(input, output) {
             addMapPane("pipe_layer", zIndex = 450) %>% 
             # Adding the boundary polygons and applying the appropriate colour palette so that each one is coloured uniquely.
             addPolygons(layerId = bb_parish %>% arrange(OBJECTID) %>% pull(UID),
-                        group = "parish",
+                        group = "Parishes",
                         color = "#1A1A1A", 
                         fillColor = "FFFFFF",
                         weight = 1, 
@@ -117,7 +117,7 @@ server <- function(input, output) {
                         fillOpacity = 0.2,
                         options = pathOptions(pane = "back_layers")) %>%
             addPolygons(data = bwa_districts %>% arrange(OBJECTID),
-                        group = "bwa",
+                        group = "BWA Districts",
                         layerId = bwa_districts %>% arrange(UID) %>% pull(UID),
                         color = "#1A1A1A", 
                         fillColor = "FFFFFF",
@@ -127,12 +127,12 @@ server <- function(input, output) {
                         fillOpacity = 0.2,
                         options = pathOptions(pane = "back_layers")) %>%
             addLayersControl(
-                baseGroups = c("parish", "bwa"),
+                baseGroups = c("Parishes", "BWA Districts"),
                 options = layersControlOptions(collapsed = FALSE, sortLayers = FALSE, autoZIndex = FALSE)
             ) %>% 
             # Adding the legend for the risk scores
             addLegend(position = "bottomright", 
-                      pal = pal_bin, 
+                      pal = pal_bin_invert, 
                       values = 1:4,
                       title = "Burst risk",
                       opacity = 0.9,
@@ -197,7 +197,8 @@ server <- function(input, output) {
                                                              weight = 6,
                                                              bringToFront = TRUE),
                          # Adding a popup
-                         popup = paste0("<b>Location: </b>",
+                         popup = paste0("<h4 style = 'margin:0; margin-bottom:7px; font-size:200%;'>Pipe Description</h4>",
+                                        "<b>Location: </b>",
                                         temp$Subdistrict,
                                         "<br>",
                                         "<b>Diameter: </b>",
@@ -212,8 +213,8 @@ server <- function(input, output) {
                                         "<b>Era built: </b>",
                                         temp$Era,
                                         "<br>",
-                                        "<b>Average monthly rainfall (based on chosen scenario): </b>",
-                                        round(temp[[isolate(input$rain)]], 2),
+                                        "<b>Mean monthly rainfall: </b>",
+                                        round(temp[[isolate(input$rain)]], 2), " mm",
                                         "<br>",
                                         "<b>Risk category: </b>",
                                         get_risk_category(temp$risk),
@@ -246,7 +247,7 @@ server <- function(input, output) {
                 mouseout_valid <<- 0
                 textOut <- "Hover over a region to see its information"
                 textOut
-            }else if(str_detect(mouseover$group, "bwa|parish")){
+            }else if(str_detect(mouseover$id, "bwa|parish")){
                 if(is.null(mouseout)){
                     textOut <<- getFeatureInfo(mouseover$id)
                     mouseout <- input$map_shape_mouseout

@@ -52,6 +52,9 @@ pal_disc <- colorFactor(palette = "viridis", domain = bwa_districts$OBJECTID)
 # Another bin-based colour palette to categorize pipe risk
 pal_bin <- colorBin(palette = c("#F1F1F1", "#FFFFB8", "#ED9000", "#E80000"), domain = c(0,4), bins = 4, pretty = F, reverse = F)
 
+# An inverted palette for use with the legend, since there seems to be some problem
+pal_bin_invert <- colorBin(palette = c("#F1F1F1", "#FFFFB8", "#ED9000", "#E80000"), domain = c(0,4), bins = 4, pretty = F, reverse = T)
+
 # Defining a vector of rainfall values with names that can allow the user to select a rainfall scenario
 vars <- c(
   "15-year average monthly rainfall" = "rain_15yravg",
@@ -81,10 +84,10 @@ getFeatureInfo <- function(uid){
   text <- character(0)
   if(str_detect(uid, "bwa")){
     feature <- bwa_districts[bwa_districts$UID == uid,]
-    text <- paste0("<b>Name: </b>", feature$DISTR_NAME, "<br>", "<b>Area: </b>", round(feature$Shape_Area, 2), " sqr m")
+    text <- paste0("<b>District Name: </b>", feature$DISTR_NAME, "<br>", "<b>Area: </b>", round(feature$Shape_Area, 2), " sqr m")
   }else{
     feature <- bb_parish[bb_parish$UID == uid,]
-    text <- paste0("<b>Name: </b>", feature$NAME, "<br>", "<b>Area: </b>", round(feature$Shape_Area, 2), " sqr m")
+    text <- paste0("<b>District Name: </b>", feature$NAME, "<br>", "<b>Area: </b>", round(feature$Shape_Area, 2), " sqr m")
   }
   return(text)
 }

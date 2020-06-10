@@ -95,6 +95,17 @@ label {
   bottom:5px;
 }
 
+.legend{
+  font-family: Catamaran;
+  letter-spacing: 0.5px;
+  line-height: 18px;
+  font-size: 15px;
+}
+
+.leaflet-popup-content{
+  font-family:Catamaran;
+}
+
 /* Customize fonts */
 body, input, button, select { 
   font-family: 'Catamaran';
