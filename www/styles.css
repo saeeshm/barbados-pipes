@@ -85,7 +85,7 @@ label {
   border-bottom:262626;
 }
 
-.irs-grid-pol, .irs-bar, .irs-from, .irs-to, .irs-grid-pol.small{
+.irs-grid-pol, .irs-bar, .irs-from, .irs-to, .irs-grid-pol.small, .irs-bar-edge, .irs-single{
   background: #262626;
 }
 

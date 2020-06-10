@@ -16,8 +16,6 @@ source("setup.R")
 
 # Define UI for application - using a navbar page
 ui <- fluidPage(
-    # Defining the colour scheme for sliders
-    chooseSliderSkin("Shiny", color = "#262626"),
     # Setting a title
     title = "Barbados Pipe Risk Platform",
     # Calling the styles.css stylesheet
