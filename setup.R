@@ -50,10 +50,10 @@ mouseout <- NULL
 pal_disc <- colorFactor(palette = "viridis", domain = bwa_districts$OBJECTID)
 
 # Another bin-based colour palette to categorize pipe risk
-pal_bin <- colorBin(palette = c("#F1F1F1", "#FFFFB8", "#ED9000", "#E80000"), domain = c(0,4), bins = 4, pretty = F, reverse = F)
+pal_bin <- colorBin(palette = c("#00B345", "#FFBA00", "#F56F02", "#CB1F47"), domain = c(0,4), bins = 4, pretty = F, reverse = F)
 
 # An inverted palette for use with the legend, since there seems to be some problem
-pal_bin_invert <- colorBin(palette = c("#F1F1F1", "#FFFFB8", "#ED9000", "#E80000"), domain = c(0,4), bins = 4, pretty = F, reverse = T)
+pal_bin_invert <- colorBin(palette = c("#00B345", "#FFBA00", "#F56F02", "#CB1F47"), domain = c(0,4), bins = 4, pretty = F, reverse = T)
 
 # Defining a vector of rainfall values with names that can allow the user to select a rainfall scenario
 vars <- c(
