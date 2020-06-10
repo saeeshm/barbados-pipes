@@ -50,6 +50,7 @@
   max-width: 95%;
   margin: 5px;
   margin-bottom: 9px;
+  padding-right:5px;
 }
 
 .filters {
@@ -58,8 +59,7 @@
   margin: 0;
   width:27%;
   min-width:225px;
-  max-width:300px;
-  min-height:450px;
+  max-width:310px;
   max-height: 90%;
 }
 
@@ -70,7 +70,7 @@
   width:27%;
   top: 60px;
   right: 10px;
-  max-width: 300px;
+  max-width: 310px;
   max-height: 400px;
 }
 
@@ -78,6 +78,21 @@ label {
   font-family: 'Catamaran';
   font-weight: bold;
   font-size: 15px;
+}
+
+.irs-bar{
+  border-top:#262626;
+  border-bottom:262626;
+}
+
+.irs-grid-pol, .irs-bar, .irs-from, .irs-to, .irs-grid-pol.small{
+  background: #262626;
+}
+
+.irs-grid-text{
+  font-size:10px;
+  color:#262626;
+  bottom:5px;
 }
 
 /* Customize fonts */

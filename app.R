@@ -16,7 +16,10 @@ source("setup.R")
 
 # Define UI for application - using a navbar page
 ui <- fluidPage(
-    title = "Vizualizing risk in the barbados pipe network",
+    # Defining the colour scheme for sliders
+    chooseSliderSkin("Shiny", color = "#262626"),
+    # Setting a title
+    title = "Barbados Pipe Risk Platform",
     # Calling the styles.css stylesheet
     theme = "styles.css",
     # Adding the font catamaran from google fonts
@@ -58,7 +61,9 @@ ui <- fluidPage(
                   # Setting the default range to be bewteen 1/4 and 3/4 of the total range
                   value = (c((ceiling(range(pipes$Length)[2]) - floor(range(pipes$Length)[1]))/4, 
                              ((ceiling(range(pipes$Length)[2]) - floor(range(pipes$Length)[1]))/4) * 3)),
-                  dragRange = T),
+                  dragRange = T,
+                  round = 1,
+                  ticks = F),
         
         # Diameter (as a range slider)
         sliderInput("diameter", "Diameter (inches)",
@@ -67,7 +72,9 @@ ui <- fluidPage(
                   # Setting the default value range to be bewteen 1/4 and 3/4 of the total range
                   value = (c((ceiling(range(pipes$Diameter)[2]) - floor(range(pipes$Diameter)[1]))/4, 
                              ((ceiling(range(pipes$Diameter)[2]) - floor(range(pipes$Diameter)[1]))/4) * 3)),
-                  dragRange = T)
+                  dragRange = T,
+                  round = 1,
+                  ticks = F)
         ),
     # Creating a floating panel that contains the climate scenario options we want
     absolutePanel(id = "rainfall", class = "panel panel-default rainfall", fixed = TRUE,
@@ -75,9 +82,9 @@ ui <- fluidPage(
                   width = "27%", height = "auto",
                   
                   h3("Risk Calculation Parameters"),
-
                   selectInput("rain", "Rainfall scenario", vars, selected = "rain_15yravg"),
-                  sliderInput(inputId = "month", label = "Month of the year", min = 1, max = 12, value = 6),
+                  sliderInput(inputId = "month", label = "Month of the year", min = 1, max = 12, value = 6, ticks = F),
+                  
                   h3("Area Description:"),
                   htmlOutput("properties"),
     ),
