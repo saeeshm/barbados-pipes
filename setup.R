@@ -4,15 +4,20 @@
 
 # ==== Loading libraries ====
 # A family of fundamental packages that assist with the manipulation, tidying and visualization of data in R
-library(tidyverse)
+library(dplyr)
+library(stringr)
 library(sf)
+library(gfonts)
 
 # ==== LOADING DATA ====
 # Getting all the relevant basemaps and objects from the map script, and adding UID variables to ease querying on the map at a later stage
 
 # Boundary files --------
 bwa_districts <- read_sf("www/bwa_districts_latlong.shp") %>% mutate(UID = paste0("bwa",OBJECTID))
-bb_parish <- read_sf("www/bb_parishes_latlong.shp") %>% mutate(UID = paste0("parish",OBJECTID))
+bb_parish <- read_sf("www/bb_parishes_latlong.shp") %>% 
+  mutate(UID = paste0("parish",OBJECTID)) %>% 
+  mutate(NAME = str_replace(NAME, "_", " ")) %>% 
+  mutate(NAME = str_to_title(NAME))
 
 # Pipe data --------
 
@@ -35,6 +40,13 @@ pipes <- read_sf("www/pipes_final.shp") %>%
 #   dplyr::mutate(UID = paste0("pipe", OBJECTID))
 
 # ==== DEFINING GLOBAL VARIABLES ====
+
+# Loading and storing the Catamaran font
+setup_font(
+  id = "catamaran",
+  output_dir = "www",
+  variants = "regular"
+)
 
 # A helper global variable to store the text description of the background layers based on the hover interaction. Defaults to an empty string
 textOut <- character(0)

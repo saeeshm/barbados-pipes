@@ -4,9 +4,6 @@
 
 # ==== Loading libraries ====
 library(shiny)
-library(tidyverse)
-library(sf)
-library(readr)
 library(leaflet)
 # Loading the script that implements the fuzzy model
 source("fuzzy.R")
@@ -21,7 +18,7 @@ ui <- fluidPage(
     # Calling the styles.css stylesheet
     theme = "styles.css",
     # Adding the font catamaran from google fonts
-    tags$link(rel = "stylesheet", href="http://fonts.googleapis.com/css?family=Catamaran"),
+    tags$link(rel = "stylesheet", type = "text/css", href = "css/catamaran.css"),
     
     div(class = "header", style = "padding: 10px; background-color: rgba(255,255,255,0.6)",
         h3("The Barbados Pipe Risk Platform"),
