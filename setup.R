@@ -103,3 +103,4 @@ getFeatureInfo <- function(uid){
   }
   return(text)
 }
+

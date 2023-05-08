@@ -1,14 +1,16 @@
 # Name: Saeesh Mangwani
 # Date: 2020-05-07
-# Description: A shiny web application visualizing risk in the municipal system on the island of Barbados
+
+# Description: A shiny web application visualizing risk in the municipal system
+# on the island of Barbados
 
 # ==== Loading libraries ====
 library(shiny)
 library(leaflet)
 # Loading the script that implements the fuzzy model
 source("fuzzy.R")
-# Loading the scripts that completes all of the setup for this app, including reading data, defining global variables and implementing helper
-# functions
+# Loading the scripts that completes all of the setup for this app, including
+# reading data, defining global variables and implementing helper functions
 source("setup.R")
 
 # Define UI for application - using a navbar page
@@ -19,7 +21,7 @@ ui <- fluidPage(
     theme = "styles.css",
     # Adding the font catamaran from google fonts
     tags$link(rel = "stylesheet", type = "text/css", href = "css/catamaran.css"),
-    
+
     div(class = "header", style = "padding: 10px; background-color: rgba(255,255,255,0.6)",
         h3("The Barbados Pipe Risk Platform"),
         h4("Vizualizing risk in the Barbados water distribution system")
@@ -27,7 +29,8 @@ ui <- fluidPage(
     
     # The first tab which draws the map using Parishes
     div(class = "outer",
-        # Setting the output of the map to cover the whole screen using the leaflet output command
+        # Setting the output of the map to cover the whole screen using the
+        # leaflet output command
         leafletOutput("map", height = "100%")
     ),
         
@@ -158,8 +161,9 @@ server <- function(input, output) {
             filter(Diameter >= input$diameter[1] & Diameter <= input$diameter[2])
     })
     
-    # Using the inputs from the climate scenario panel to calculate the correct risk scores and storing these in a reactive object.Note that we
-    # calculated for the entire dataset every time the user asks for a new scenario
+    # Using the inputs from the climate scenario panel to calculate the correct
+    # risk scores and storing these in a reactive object.Note that we calculated
+    # for the entire dataset every time the user asks for a new scenario
     risk <- reactive({
         pipes %>% 
             rowwise() %>%
@@ -260,4 +264,5 @@ server <- function(input, output) {
 }
 
 # Run the application 
-shinyApp(ui = ui, server = server)
+shiny::runApp()
+

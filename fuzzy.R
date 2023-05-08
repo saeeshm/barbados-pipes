@@ -6,8 +6,8 @@
 library(tidyverse)
 library(FuzzyR)
 
-# Creating a new fuzzy inference system (fis) - most parameters are kept at default since the defualts are consistent with how Tara has defined her
-# fis
+# Creating a new fuzzy inference system (fis) - most parameters are kept at
+# default since the defualts are consistent with how Tara has defined her fis
 fis <- newfis("hotspot_model2020")
 
 # Add input and output variables to this fis
@@ -18,9 +18,11 @@ fis <- addvar(fis, 'input', 'pressure', c(-115, 270))
 fis <- addvar(fis, 'input', 'rainfall', c(0, 220))
 fis <- addvar(fis, 'output', 'risk', c(1, 4))
 
-# Adding membership functions (mfs) to each input variable (since the built-in function for adding mfs doesn't seem to be working, I wrote a custom
-# function for doing it. Not this is not a robust function, i.e it does not contain any error checking and is merely a workaround to the lack of
-# functionality in the package function)
+# Adding membership functions (mfs) to each input variable (since the built-in
+# function for adding mfs doesn't seem to be working, I wrote a custom function
+# for doing it. Not this is not a robust function, i.e it does not contain any
+# error checking and is merely a workaround to the lack of functionality in the
+# package function)
 addmf_custom <- function(fis, var_type, index, name, mf_type, params){
   # Getting a count of how many mfs are already present and using it to locate where to add the new mf
   num_mf <- length(fis[[var_type]][[index]]$mf) + 1
@@ -86,3 +88,4 @@ fis <- addrule(fis, ruleList)
 # Removing unnecessary objects and garbage collecting
 rm(ruleList, addmf_custom)
 gc()
+
